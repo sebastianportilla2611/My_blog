@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinity System | Evidence Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;500;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #030712;
+            --neon-blue: #00f0ff;
+            --neon-purple: #8a2be2;
+            --card-bg: rgba(17, 24, 39, 0.6);
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            cursor: none; /* Custom cursor takes over */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* --- CUSTOM MAGNETIC CURSOR --- */
+        .cursor-dot, .cursor-outline {
+            position: fixed;
+            top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .cursor-dot {
+            width: 8px; height: 8px;
+            background-color: var(--neon-blue);
+        }
+        .cursor-outline {
+            width: 40px; height: 40px;
+            border: 1px solid rgba(0, 240, 255, 0.5);
+            transition: width 0.2s, height 0.2s, border-color 0.2s;
+        }
+
+        /* --- CANVAS BACKGROUND --- */
+        #particle-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -2;
+            background: radial-gradient(circle at center, #0f172a 0%, #030712 100%);
+        }
+
+        /* --- TERMINAL BOOT SEQUENCE --- */
+        #boot-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000;
+            z-index: 5000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 5vw;
+            font-family: 'JetBrains Mono', monospace;
+            color: #0f0;
+            transition: opacity 1s ease-in-out;
+        }
+        .terminal-line { margin-bottom: 0.5rem; opacity: 0; }
+
+        /* --- MAIN LAYOUT --- */
+        #main-content {
+            opacity: 0;
+            transition: opacity 1.5s ease-in;
+            padding: 4rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        header {
+            text-align: left;
+            margin-bottom: 5rem;
+            position: relative;
+        }
+
+        .system-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--neon-blue);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .pulse {
+            width: 8px; height: 8px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-blue);
+            animation: pulse-anim 1.5s infinite;
+        }
+
+        @keyframes pulse-anim { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        h1 {
+            font-size: clamp(3rem, 6vw, 5.5rem);
+            font-weight: 800;
+            line-height: 1;
+            background: linear-gradient(to right, #fff, #475569);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- 3D TILT GRID --- */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 3rem;
+            perspective: 1000px;
+        }
+
+        .tilt-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2.5rem;
+            backdrop-filter: blur(15px);
+            transform-style: preserve-3d;
+            transition: border-color 0.3s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tilt-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0) inset;
+            transition: box-shadow 0.3s;
+            pointer-events: none;
+        }
+
+        .tilt-card:hover {
+            border-color: rgba(0, 240, 255, 0.3);
+        }
+
+        .tilt-card:hover::after {
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.05) inset;
+        }
+
+        /* Card Elements translated in Z-axis for 3D effect */
+        .card-index {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--neon-blue);
+            font-size: 1.2rem;
+            transform: translateZ(40px);
+            margin-bottom: 1rem;
+        }
+
+        .tilt-card h2 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            transform: translateZ(60px);
+        }
+
+        .tilt-card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            flex-grow: 1;
+            transform: translateZ(30px);
+        }
+
+        .read-btn {
+            align-self: flex-start;
+            padding: 10px 20px;
+            background: transparent;
+            color: white;
+            border: 1px solid var(--neon-purple);
+            border-radius: 30px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            text-decoration: none;
+            transform: translateZ(50px);
+            transition: all 0.3s;
+        }
+
+        .read-btn:hover {
+            background: var(--neon-purple);
+            box-shadow: 0 0 15px var(--neon-purple);
+        }
+
+        /* Pending Required Evidences */
+        .tilt-card.required {
+            background: rgba(20, 15, 5, 0.7);
+            border: 1px dashed rgba(245, 158, 11, 0.4);
+        }
+        .tilt-card.required .card-index { color: #f59e0b; }
+        .tilt-card.required .read-btn { border-color: #f59e0b; }
+        .tilt-card.required .read-btn:hover { background: #f59e0b; box-shadow: 0 0 15px #f59e0b; color: #000; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .blog-grid { grid-template-columns: 1fr; }
+            #boot-screen { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <div id="boot-screen">
+        <div class="terminal-line" id="line1">> INITIALIZING INFINITY PROTOCOL...</div>
+        <div class="terminal-line" id="line2">> LOADING ENGLISH COMPONENT DATA [██████████] 100%</div>
+        <div class="terminal-line" id="line3">> VERIFYING SECURITY CLEARANCE... GRANTED.</div>
+        <div class="terminal-line" id="line4">> ESTABLISHING CONNECTION TO EVIDENCE HUB...</div>
+        <div class="terminal-line" id="line5">> SYSTEM READY. WELCOME.</div>
+    </div>
+
+    <main id="main-content">
+        <header>
+            <div class="system-status">
+                <div class="pulse"></div>
+                Infinity Core // Active Module
+            </div>
+            <h1>Digital Architecture<br>& Linguistic Data</h1>
+            <p style="color: var(--text-muted); max-width: 600px; font-size: 1.2rem;">A professional convergence of software engineering paradigms, critical analysis, and technical English proficiency.</p>
+        </header>
+
+        <section class="blog-grid">
+            <article class="tilt-card" data-tilt>
+                <div class="card-index">_01</div>
+                <h2>Evidence 1</h2>
+                <p>Paste the introduction or a brief summary of your first completed evidence here. Notice how the elements float slightly above the card background when you move your mouse.</p>
+                <a href="file:///C:/Users/Sebastian%20P/Desktop/Sena%20Software/Fase%201%20Analisis/Actividad%20de%20proyecto%202/Ingles%20GA4/Sebastian_Portilla_PLE.html" class="read-btn" data-cursor-hover>Execute File</a>
+            </article>
+
+            <article class="tilt-card" data-tilt>
+                <div class="card-index">_02</div>
+                <h2>[Title of Evidence 2]</h2>
+                <p>Insert the content for your second completed evidence. The physics engine running in the background calculates your exact X and Y coordinates to create this holographic effect.</p>
+                <a href="#" class="read-btn" data-cursor-hover>Execute File</a>
+            </article>
+
+            <article class="tilt-card" data-tilt>
+                <div class="card-index">_03</div>
+                <h2>[Title of Evidence 3]</h2>
+                <p>Your third evidence goes here. This architecture guarantees that no matter how complex the logic gets, the frontend remains smooth and perfectly aligned.</p>
+                <a href="#" class="read-btn" data-cursor-hover>Execute File</a>
+            </article>
+
+            <article class="tilt-card" data-tilt>
+                <div class="card-index">_04</div>
+                <h2>[Title of Evidence 4]</h2>
+                <p>Place your fourth text here. As developers, presenting our work is just as important as writing the code. This portfolio speaks volumes before they even read a word.</p>
+                <a href="#" class="read-btn" data-cursor-hover>Execute File</a>
+            </article>
+
+            <article class="tilt-card" data-tilt>
+                <div class="card-index">_05</div>
+                <h2>[Title of Evidence 5]</h2>
+                <p>Insert your fifth completed text here. With this, the base metrics of the project are fulfilled, unlocking the analytical modules below.</p>
+                <a href="#" class="read-btn" data-cursor-hover>Execute File</a>
+            </article>
+
+            <article class="tilt-card required" data-tilt>
+                <div class="card-index">_06 [REQUIRED]</div>
+                <h2>Critical Thinking & Media Literacy</h2>
+                <p>Mandatory module. A deep dive into fact-checking algorithms, identifying bias in digital ecosystems, and protecting cognitive assets in the information age.</p>
+                <a href="#" class="read-btn" data-cursor-hover>Awaiting Data...</a>
+            </article>
+
+            <article class="tilt-card required" data-tilt>
+                <div class="card-index">_07 [REQUIRED]</div>
+                <h2>Crime & Punishment</h2>
+                <p>Mandatory module. An analysis of cybercrime legislation, digital forensics, and the ethical boundaries of software deployment in modern society.</p>
+                <a href="#" class="read-btn" data-cursor-hover>Awaiting Data...</a>
+            </article>
+        </section>
+    </main>
+
+    <script>
+        /* --- 1. TERMINAL BOOT LOGIC --- */
+        const lines = [
+            document.getElementById('line1'),
+            document.getElementById('line2'),
+            document.getElementById('line3'),
+            document.getElementById('line4'),
+            document.getElementById('line5')
+        ];
+        
+        let delay = 300;
+        lines.forEach((line, index) => {
+            setTimeout(() => {
+                line.style.opacity = '1';
+                if (index === lines.length - 1) {
+                    setTimeout(() => {
+                        document.getElementById('boot-screen').style.opacity = '0';
+                        setTimeout(() => {
+                            document.getElementById('boot-screen').style.display = 'none';
+                            document.getElementById('main-content').style.opacity = '1';
+                        }, 1000);
+                    }, 1500);
+                }
+            }, delay);
+            delay += Math.random() * 600 + 400; // Random typing delay
+        });
+
+        /* --- 2. CUSTOM MAGNETIC CURSOR --- */
+        const cursorDot = document.getElementById('cursor-dot');
+        const cursorOutline = document.getElementById('cursor-outline');
+        let mouseX = 0, mouseY = 0;
+        let outlineX = 0, outlineY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+        });
+
+        // Smooth follow for the outline
+        function animateCursor() {
+            let distX = mouseX - outlineX;
+            let distY = mouseY - outlineY;
+            outlineX += distX * 0.15;
+            outlineY += distY * 0.15;
+            cursorOutline.style.transform = `translate(${outlineX}px, ${outlineY}px)`;
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Cursor hover effects
+        document.querySelectorAll('[data-cursor-hover]').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorOutline.style.width = '60px';
+                cursorOutline.style.height = '60px';
+                cursorOutline.style.borderColor = 'var(--neon-purple)';
+                cursorOutline.style.backgroundColor = 'rgba(138, 43, 226, 0.1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorOutline.style.width = '40px';
+                cursorOutline.style.height = '40px';
+                cursorOutline.style.borderColor = 'rgba(0, 240, 255, 0.5)';
+                cursorOutline.style.backgroundColor = 'transparent';
+            });
+        });
+
+        /* --- 3. 3D TILT PHYSICS ENGINE (Vanilla JS) --- */
+        const cards = document.querySelectorAll('.tilt-card');
+        
+        cards.forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left; // x position within the element.
+                const y = e.clientY - rect.top;  // y position within the element.
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY) * -10; // Max rotation 10deg
+                const rotateY = ((x - centerX) / centerX) * 10;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                card.style.transition = 'transform 0.5s ease';
+            });
+            
+            card.addEventListener('mouseenter', () => {
+                card.style.transition = 'none'; // Remove transition for smooth tracking
+            });
+        });
+
+        /* --- 4. NETWORK PARTICLE CANVAS --- */
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray = [];
+        const numberOfParticles = 80;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = (Math.random() * 1) - 0.5;
+                this.speedY = (Math.random() * 1) - 0.5;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
+                if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(0, 240, 255, 0.5)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function connectParticles() {
+            let opacityValue = 1;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
+                                 + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                    if (distance < (canvas.width/7) * (canvas.height/7)) {
+                        opacityValue = 1 - (distance / 20000);
+                        ctx.strokeStyle = `rgba(0, 240, 255, ${opacityValue * 0.15})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            connectParticles();
+            requestAnimationFrame(animateCanvas);
+        }
+
+        initParticles();
+        animateCanvas();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        });
+    </script>
+</body>
+</html>

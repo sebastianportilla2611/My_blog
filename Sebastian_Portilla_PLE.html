@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trading Learning Process</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --neon-purple: #9d4edd;
+      --neon-green: #00f5d4;
+      --neon-blue: #00b4d8;
+      --neon-red: #ff0054;
+      --bg-dark: #020205;
+      --panel-bg: rgba(8, 10, 15, 0.9);
+      --terminal-font: 'Fira Code', monospace;
+      --trading-chart: url('https://images.unsplash.com/photo-1640340434855-6084b1f4901c?q=80&w=1964&auto=format&fit=crop');
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: linear-gradient(rgba(2, 2, 5, 0.85), rgba(2, 2, 5, 0.98)), var(--trading-chart);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #e0e0e0;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 30px;
+    }
+
+    
+    body::before {
+      content: " ";
+      position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .header {
+      border-left: 4px solid var(--neon-purple);
+      padding-left: 20px;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-family: var(--terminal-font);
+      font-size: 1.5rem;
+      color: var(--neon-purple);
+      margin: 0;
+      letter-spacing: 2px;
+    }
+
+    .central-node {
+      background: var(--neon-purple);
+      color: white;
+      width: fit-content;
+      padding: 12px 50px;
+      margin: 0 auto 50px auto;
+      font-weight: 800;
+      clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+      text-transform: uppercase;
+      box-shadow: 0 0 25px rgba(157, 78, 221, 0.4);
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 25px;
+      max-width: 1350px;
+      margin: 0 auto;
+    }
+
+    .panel {
+      background: var(--panel-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 25px;
+    }
+
+    .branch-label {
+      font-family: var(--terminal-font);
+      font-size: 0.85rem;
+      padding: 5px 15px;
+      margin-bottom: 30px;
+      display: inline-block;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    
+    .strat { border-top: 3px solid var(--neon-green); }
+    .strat .branch-label { background: var(--neon-green); color: black; }
+    
+    .ict { border-top: 3px solid var(--neon-blue); }
+    .ict .branch-label { background: var(--neon-blue); color: black; }
+    
+    .work { border-top: 3px solid var(--neon-purple); }
+    .work .branch-label { background: var(--neon-purple); color: white; }
+    
+    .goal { border-top: 3px solid var(--neon-red); }
+    .goal .branch-label { background: var(--neon-red); color: white; }
+
+    .node-group { margin-bottom: 25px; }
+
+    
+    .level-3 { color: #ffffff; font-weight: 700; font-size: 1rem; display: block; margin-bottom: 2px; }
+    .level-4 { color: #848e9c; font-family: var(--terminal-font); font-size: 0.75rem; display: block; margin-bottom: 8px; font-style: italic; }
+    .level-5 { 
+        background: rgba(0, 0, 0, 0.5); 
+        padding: 10px 15px; 
+        border-radius: 4px; 
+        font-size: 0.88rem; 
+        border-left: 2px solid rgba(255,255,255,0.1);
+        color: #ccd0d6;
+    }
+    .level-5 b { color: var(--neon-green); text-decoration: underline; }
+
+    @media print {
+      body { background: white !important; color: black; background-image: none !important; }
+      .panel { border: 1px solid #000; page-break-inside: avoid; background: white; backdrop-filter: none; }
+      .level-5 { background: #f0f0f0; color: black; border: 1px solid #ccc; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>My Personal Learning Environment</h1>
+    <div style="font-size: 0.8rem; color: #848e9c; font-family: var(--terminal-font);">YAMIT SEBASTIAN PORTILLA CORTES | English B1.1+ | FICHA: 3186684</div>
+  </div>
+
+
+  <div class="central-node"> MY PLE</div>
+
+  <div class="dashboard">
+
+    <div class="panel strat">
+      <div class="branch-label">LEARNING STRATEGIES</div>
+      
+      <div class="node-group">
+        <span class="level-3">Backtesting analysis</span>
+        <span class="level-4">Historical data / TradingView </span>
+        <div class="level-5">I always verify my trading strategy every day.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Spaced repetition</span>
+        <span class="level-4">Flashcards / daily / 20 min </span>
+        <div class="level-5">I usually review new trading terms in English every night.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Identifying patterns</span>
+        <span class="level-4">Candlesticks / charts / price action</span>
+        <div class="level-5">I often study candlestick charts to identify market entries.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Managing risks</span>
+        <span class="level-4">Excel / stop loss / position size</span>
+        <div class="level-5">I frequently calculate my risk management before trading.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Reading technicals</span>
+        <span class="level-4">Bloomberg / articles / financial news</span>
+        <div class="level-5">I always read financial news in English to stay updated.</div>
+      </div>
+    </div>
+
+    <div class="panel ict">
+      <div class="branch-label">ICT TOOLS</div>
+      
+      <div class="node-group">
+        <span class="level-3">Charting platforms</span>
+        <span class="level-4">TradingView / desktop / online</span>
+        <div class="level-5">I usually use TradingView to draw my support levels.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Artificial Intelligence</span>
+        <span class="level-4">Gemini AI / prompts / debugging</span>
+        <div class="level-5">I often use Gemini AI to debug the code of my trading bots.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Exchanges</span>
+        <span class="level-4">Binance / mobile app / crypto wallet</span>
+        <div class="level-5">I frequently use Binance to monitor my crypto portfolio.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Mobile learning</span>
+        <span class="level-4">ELSA Speak / daily / pronunciation app</span>
+        <div class="level-5">I sometimes use ELSA Speak to improve my English vocabulary.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Streaming video</span>
+        <span class="level-4">YouTube / daily / trading strategies</span>
+        <div class="level-5">I always watch YouTube videos about new trading strategies.</div>
+      </div>
+    </div>
+
+    <div class="panel work">
+      <div class="branch-label">WORK CONTEXT</div>
+      
+      <div class="node-group">
+        <span class="level-3">Coding bots</span>
+        <span class="level-4">Python / VS Code / trading API</span>
+        <div class="level-5">I frequently write scripts in Python for my automated bots.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Writing reports</span>
+        <span class="level-4">PDF / technical / weekly updates</span>
+        <div class="level-5">I usually create technical reports in English for my community.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Networking meetings</span>
+        <span class="level-4">Telegram / groups / market trends</span>
+        <div class="level-5">I often talk about market trends with my trading partners.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Testing software</span>
+        <span class="level-4">Debugging / logic / code review</span>
+        <div class="level-5">I always check the logic of my software to avoid execution errors.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Analyzing data</span>
+        <span class="level-4">Excel / spreadsheets / quantitative</span>
+        <div class="level-5">I sometimes analyze historical price data in Excel sheets.</div>
+      </div>
+    </div>
+
+    <div class="panel goal">
+      <div class="branch-label">PERSONAL GOALS</div>
+      
+      <div class="node-group">
+        <span class="level-3">Getting certification</span>
+        <span class="level-4">SENA degree / software development / graduation</span>
+        <div class="level-5">I always study hard to finish my studies in analysis and software development.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Increasing my capital</span>
+        <span class="level-4">Real account / compounding / consistency </span>
+        <div class="level-5">I frequently trade to increase my real account balance because I want to reach one million dollars.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Networking for my project</span>
+        <span class="level-4">LinkedIn / international investors / research / global market</span>
+        <div class="level-5">I usually research international investors on LinkedIn to promote my project in the future.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Seeking job opportunities</span>
+        <span class="level-4">Software developer / English speaking / foreign countries</span>
+        <div class="level-5">I always practice my speaking skills because I want to find job opportunities in other countries.</div>
+      </div>
+
+      <div class="node-group">
+        <span class="level-3">Building my own business</span>
+        <span class="level-4">Tech company / entrepreneurship / startup / InfinityTrading</span>
+        <div class="level-5">I always work hard because I want to have my own tech company called InfinityTrading.</div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
